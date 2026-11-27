@@ -25,6 +25,12 @@ jobs:
         # Шаг CI: Проверяем, что C#-код компилируется без синтаксических ошибок
         run: dotnet build ./CloudShop/CloudShop.csproj --configuration Release
 
+      - name: Lowercase repository name
+        # GHCR требует имена репозиториев в нижнем регистре,
+        # поэтому github.repository (например, Misto22/My-Cloud-Shop)
+        # приводим к виду misto22/my-cloud-shop
+        run: echo "IMAGE_NAME=${{ github.repository }}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_ENV
+
       - name: Login to GitHub Container Registry
         # Авторизуемся в реестре ghcr.io с помощью временного системного токена
         uses: docker/login-action@v3
@@ -37,6 +43,7 @@ jobs:
         # Шаг CD: Собираем контейнер из Dockerfile и публикуем его в облачный реестр
         uses: docker/build-push-action@v5
         with:
-          context: ./CloudShop
+          context: ./CloudShopgit add .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/my-cloud-shop:latest
+          tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
+
