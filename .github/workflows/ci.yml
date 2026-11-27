@@ -21,6 +21,12 @@ jobs:
         with:
           dotnet-version: '10.0.x' # Устанавливаем компилятор .NET 10
 
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+
       - name: Build .NET project
         # Шаг CI: Проверяем, что C#-код компилируется без синтаксических ошибок
         run: dotnet build ./CloudShop/CloudShop.csproj --configuration Release
@@ -39,4 +45,4 @@ jobs:
         with:
           context: ./CloudShop
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/my-cloud-shop:latest
+          tags: ghcr.io/${{ env.OWNER_LC }}/my-cloud-shop:latest
